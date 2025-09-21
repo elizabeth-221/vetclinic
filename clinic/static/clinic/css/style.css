@@ -1,0 +1,181 @@
+:root {
+    --pastel-primary: #a2d2ff;
+    --pastel-secondary: #ffafcc;
+    --pastel-accent: #cdb4db;
+    --pastel-success: #9bf6ff;
+    --pastel-light: #fdffb6;
+    --pastel-background: #fffffc;
+    --pastel-text: #4a4e69;
+}
+
+body {
+    background-color: var(--pastel-background);
+    color: var(--pastel-text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Навбар */
+.navbar-custom {
+    background: linear-gradient(135deg, var(--pastel-primary) 0%, var(--pastel-accent) 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: white !important;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    margin: 0 0.5rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* Герой секция */
+.hero-section {
+    background: linear-gradient(135deg, var(--pastel-primary) 0%, var(--pastel-success) 100%);
+    border-radius: 25px;
+    padding: 4rem 2rem;
+    margin: 3rem 0;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+}
+
+.hero-section .lead {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+}
+
+/* Поиск */
+.search-box {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    padding: 0.8rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.search-box .form-control {
+    border: none;
+    background: transparent;
+    box-shadow: none !important;
+}
+
+.search-box .form-control:focus {
+    outline: none;
+}
+
+/* Карточки */
+.custom-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    background: white;
+    overflow: hidden;
+}
+
+.custom-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+}
+
+.promotion-card {
+    border-left: 5px solid var(--pastel-secondary);
+}
+
+.doctor-card {
+    border-left: 5px solid var(--pastel-primary);
+}
+
+.review-card {
+    border-left: 5px solid var(--pastel-success);
+}
+
+/* Изображения врачей */
+.doctor-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--pastel-accent);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Кнопки */
+.btn-pastel {
+    background: linear-gradient(135deg, var(--pastel-secondary) 0%, var(--pastel-primary) 100%);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-pastel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    color: white;
+}
+
+/* Звезды рейтинга */
+.star-rating {
+    color: #ffd166;
+    font-size: 1.1rem;
+}
+
+/* Футер */
+.footer-custom {
+    background: linear-gradient(135deg, var(--pastel-accent) 0%, var(--pastel-primary) 100%);
+    color: white;
+    padding: 3rem 0 2rem;
+}
+
+.footer-custom h5,
+.footer-custom h6 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.social-links a {
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    transform: translateY(-3px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1rem;
+        margin: 1rem 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.1rem;
+    }
+    
+    .doctor-image {
+        width: 80px;
+        height: 80px;
+    }
+}

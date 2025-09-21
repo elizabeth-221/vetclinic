@@ -78,7 +78,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'clinic/static'),  # Путь к статическим файлам приложения
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Для collectstatic
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

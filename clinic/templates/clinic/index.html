@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ветеринарная клиника "Питомец"</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'clinic/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <!-- Навбар -->
+    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-paw me-2"></i>Питомец
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="#">Главная</a>
+                <a class="nav-link" href="#">Услуги</a>
+                <a class="nav-link" href="#">Врачи</a>
+                <a class="nav-link" href="#">Отзывы</a>
+                <a class="nav-link" href="#">Контакты</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Забота о ваших любимцах с любовью</h1>
+                    <p class="lead mb-4">Профессиональная ветеринарная помощь с индивидуальным подходом к каждому питомцу</p>
+                    <div class="search-box">
+                        <form class="d-flex" method="GET" action="{% url 'clinic:index' %}">
+                            <input class="form-control border-0 shadow-none" type="search" name="q" 
+                                   placeholder="Найти услугу..." value="{{ search_query }}">
+                            <button class="btn btn-pastel ms-2" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="{% static 'clinic/images/Главная.jpg' %}" 
+                        alt="Довольные питомцы" class="img-fluid rounded-3">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Акции -->
+    <section class="container my-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Специальные предложения</h2>
+            <p class="text-muted">Воспользуйтесь выгодными акциями для ваших питомцев</p>
+        </div>
+        <div class="row">
+            {% for promotion in active_promotions %}
+            <div class="col-md-4 mb-4">
+                <div class="card custom-card promotion-card h-100">
+                    <div class="card-body">
+                        <span class="badge bg-danger mb-2">Акция</span>
+                        <h5 class="card-title fw-bold">{{ promotion.title }}</h5>
+                        <p class="card-text">{{ promotion.text|truncatewords:25 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">До {{ promotion.end_date|date:"d.m.Y" }}</small>
+                            <button class="btn btn-sm btn-pastel">Подробнее</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Сейчас нет активных акций</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Врачи -->
+    <section class="container my-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Наша команда</h2>
+            <p class="text-muted">Опытные специалисты, которые любят своих пациентов</p>
+        </div>
+        <div class="row">
+            {% for doctor in featured_doctors %}
+            <div class="col-md-3 mb-4">
+                <div class="card custom-card doctor-card h-100">
+                    <div class="card-body text-center">
+                        <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}https://placehold.co/100x100/cdb4db/ffffff?text=DR{% endif %}" 
+                             alt="{{ doctor.first_name }}" class="doctor-image mb-3">
+                        <h5 class="card-title fw-bold">Др. {{ doctor.first_name }} {{ doctor.last_name }}</h5>
+                        <p class="text-muted">Опыт: {{ doctor.experience }} лет</p>
+                        <div class="specializations mb-3">
+                            {% for spec in doctor.specializations.all %}
+                            <span class="badge bg-light text-dark me-1">{{ spec.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <p class="card-text small">{{ doctor.description|truncatewords:15 }}</p>
+                        <button class="btn btn-outline-primary btn-sm">Записаться</button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Врачи не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="container my-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Что говорят наши клиенты</h2>
+            <p class="text-muted">Более 1000 довольных питомцев и их хозяев</p>
+        </div>
+        <div class="row">
+            {% for review in reviews %}
+            <div class="col-md-6 mb-4">
+                <div class="card custom-card review-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h6 class="card-title fw-bold mb-0">{{ review.author_name }}</h6>
+                            <div class="star-rating">
+                                {% for i in "12345" %}
+                                <i class="fas fa-star{% if forloop.counter > review.rating %}-o{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="card-text">{{ review.text }}</p>
+                        <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Пока нет отзывов</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer-custom py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold">Ветеринарная клиника "Питомец"</h5>
+                    <p>Профессиональная забота о ваших любимых животных</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6>Контакты</h6>
+                    <p><i class="fas fa-phone me-2"></i>+7 (495) 123-45-67</p>
+                    <p><i class="fas fa-envelope me-2"></i>info@pitomec.ru</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6>Мы в соцсетях</h6>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="fab fa-vk fa-lg"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-telegram fa-lg"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

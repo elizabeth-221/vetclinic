@@ -100,6 +100,15 @@ class Review(models.Model):
     is_approved = models.BooleanField(default=False, verbose_name="Одобрен")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
+    doctor = models.ForeignKey(
+        Doctor, 
+        on_delete=models.SET_NULL,  # Если врача удалят, отзыв останется, но связь обнулится
+        null=True,                  # Разрешаем NULL значения
+        blank=True,                 # Поле может быть пустым в формах
+        verbose_name="Врач",
+        related_name='reviews'      # Важно! Теперь у врача будет врач.reviews.all()
+    )
+
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"

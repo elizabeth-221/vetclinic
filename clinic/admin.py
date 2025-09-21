@@ -107,22 +107,22 @@ class AppointmentAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('author_name', 'rating', 'is_approved', 'short_text', 'created_at')
+    list_display = ('author_name', 'doctor', 'rating', 'is_approved', 'short_text', 'created_at')  # Добавили 'doctor'
     list_display_links = ('author_name',)
-    list_filter = ('rating', 'is_approved', 'created_at')
-    list_editable = ('is_approved',)  # Одобрение/запрет отзыва прямо из списка
-    search_fields = ('author_name', 'text')
+    list_filter = ('rating', 'is_approved', 'created_at', 'doctor')  # Добавили фильтр по врачу
+    list_editable = ('is_approved',)
+    search_fields = ('author_name', 'text', 'doctor__first_name', 'doctor__last_name')  # Добавили поиск по врачу
     readonly_fields = ('created_at',)
-    actions = ['approve_reviews']  # Добавляем массовое действие
+    # Добавляем поле врача в сырой виджет (удобно, если врачей много)
+    raw_id_fields = ('doctor',) 
+    actions = ['approve_reviews']
 
-    # Кастомный метод для укороченного текста отзыва
     @admin.display(description="Текст отзыва")
     def short_text(self, obj):
         if len(obj.text) > 50:
             return f"{obj.text[:50]}..."
         return obj.text
 
-    # Массовое действие: одобрить выбранные отзывы
     @admin.action(description="Одобрить выбранные отзывы")
     def approve_reviews(self, request, queryset):
         updated_count = queryset.update(is_approved=True)
