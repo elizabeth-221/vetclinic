@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, Count, Avg  # Импорт для сложных запросов и агрегации
 from django.utils import timezone  # Для работы с датами
 from .models import Service, Doctor, Promotion, Review
+from .forms import DoctorForm
 
 def index(request):
     # 1. Получаем активные акции (сейчас и позже начала, и раньше окончания)
@@ -45,3 +46,21 @@ def index(request):
         'doctors_with_rating': doctors_with_rating,  # Передаем в шаблон
     }
     return render(request, 'clinic/index.html', context)
+
+def search_services(request):
+    search_query = request.GET.get('q', '')
+    services = Service.objects.filter(is_active=True)
+    
+    if search_query:
+        services = services.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+    
+    context = {
+        'search_query': search_query,
+        'services': services,
+        'results_count': services.count()
+    }
+    return render(request, 'clinic/search_results.html', context)
+

@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска - Ветеринарная клиника "Питомец"</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'clinic/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <!-- Навбар -->
+    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'clinic:index' %}">
+                <i class="fas fa-paw me-2"></i>Питомец
+            </a>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="search-hero">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="hero-content">
+                        <i class="fas fa-search hero-icon mb-3"></i>
+                        <h1 class="hero-title mb-3">Результаты поиска</h1>
+                        {% if search_query %}
+                        <div class="search-query-container">
+                            <p class="search-subtitle">По вашему запросу</p>
+                            <div class="search-query-box">
+                                "{{ search_query }}"
+                            </div>
+                            {% if services %}
+                            <p class="search-count">найдено {{ results_count }} услуг</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Результаты поиска -->
+    <section class="container search-results-section">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% if services %}
+                    <div class="services-grid">
+                        {% for service in services %}
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-header">
+                                    <h3>{{ service.name }}</h3>
+                                    <span class="service-price">{{ service.price }} ₽</span>
+                                </div>
+                                <p class="service-description">{{ service.description }}</p>
+                                
+                                {% if service.doctors.all %}
+                                <div class="service-doctors">
+                                    <h4><i class="fas fa-user-md me-2"></i>Специалисты</h4>
+                                    <div class="doctors-list">
+                                        {% for doctor in service.doctors.all %}
+                                        <span class="doctor-item">
+                                            <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}https://placehold.co/35x35/cdb4db/ffffff?text=DR{% endif %}" 
+                                                 alt="{{ doctor.first_name }}" class="doctor-avatar">
+                                            <span>{{ doctor.first_name }} {{ doctor.last_name }}</span>
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="service-actions">
+                                <span class="service-status {% if service.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                    <i class="fas fa-circle"></i>
+                                    {% if service.is_active %}Доступно{% else %}Недоступно{% endif %}
+                                </span>
+                                <button class="btn-appointment">
+                                    <i class="fas fa-calendar-plus me-2"></i>Записаться
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Если ничего не найдено -->
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <i class="fas fa-search fa-3x"></i>
+                        </div>
+                        <h2>Ничего не найдено</h2>
+                        <p>Попробуйте изменить поисковый запрос или посмотрите все наши услуги</p>
+                        <a href="{% url 'clinic:index' %}" class="btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Все услуги
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Кнопка возврата -->
+                <div class="text-center mt-5">
+                    <a href="{% url 'clinic:index' %}" class="btn-back">
+                        <i class="fas fa-arrow-left me-2"></i>Вернуться на главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="footer-content text-center">
+                <p>© 2025 Ветеринарная клиника "Питомец" · Забота о ваших питомцах</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
