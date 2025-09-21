@@ -1,0 +1,405 @@
+{% extends 'clinic/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'clinic:index' %}" class="text-decoration-none">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'clinic:doctor_list' %}" class="text-decoration-none">Все врачи</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg doctor-form-card">
+                <div class="card-header bg-transparent border-0 py-4">
+                    <h1 class="h2 fw-bold text-center mb-0 text-primary">
+                        <i class="fas fa-user-md me-3"></i>{{ title }}
+                    </h1>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Общие ошибки формы -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Левая колонка -->
+                            <div class="col-md-6">
+                                <!-- Имя -->
+                                <div class="mb-4 form-group">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>Имя *
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-2">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Фамилия -->
+                                <div class="mb-4 form-group">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>Фамилия *
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-2">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Опыт работы -->
+                                <div class="mb-4 form-group">
+                                    <label for="{{ form.experience.id_for_label }}" class="form-label fw-semibold">
+                                        <i class="fas fa-briefcase me-2 text-primary"></i>Опыт работы (лет) *
+                                    </label>
+                                    {{ form.experience }}
+                                    {% if form.experience.errors %}
+                                    <div class="text-danger small mt-2">{{ form.experience.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Фотография -->
+                                <div class="mb-4 form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-camera me-2 text-primary"></i>Фотография
+                                    </label>
+                                    <div class="custom-file-upload">
+                                        <label for="{{ form.photo.id_for_label }}" class="file-upload-btn">
+                                            <i class="fas fa-cloud-upload-alt me-2"></i>Выберите файл
+                                            {{ form.photo }}
+                                        </label>
+                                        <span class="file-name" id="fileName">Файл не выбран</span>
+                                    </div>
+                                    {% if form.photo.errors %}
+                                    <div class="text-danger small mt-2">{{ form.photo.errors }}</div>
+                                    {% endif %}
+                                    {% if doctor and doctor.photo %}
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block mb-2">Текущее фото:</small>
+                                        <img src="{{ doctor.photo.url }}" alt="Текущее фото" class="img-thumbnail current-photo">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Правая колонка -->
+                            <div class="col-md-6">
+                                <!-- Специализации -->
+                                <div class="mb-4 form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-graduation-cap me-2 text-primary"></i>Специализации
+                                    </label>
+                                    <div class="specializations-container">
+                                        {{ form.specializations }}
+                                    </div>
+                                    {% if form.specializations.errors %}
+                                    <div class="text-danger small mt-2">{{ form.specializations.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Описание -->
+                                <div class="mb-4 form-group">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                                        <i class="fas fa-file-alt me-2 text-primary"></i>Описание
+                                    </label>
+                                    <div class="description-container">
+                                        {{ form.description }}
+                                    </div>
+                                    {% if form.description.errors %}
+                                    <div class="text-danger small mt-2">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Показывать на главной -->
+                                <div class="mb-4 form-group">
+                                    <div class="form-check form-switch featured-switch">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label fw-semibold" for="{{ form.is_featured.id_for_label }}">
+                                            <i class="fas fa-star me-2 text-warning"></i>Показывать на главной
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-3 justify-content-center mt-5 pt-3">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 save-btn">
+                                <i class="fas fa-save me-2"></i>Сохранить
+                            </button>
+                            <a href="{% if doctor %}{% url 'clinic:doctor_detail' doctor.pk %}{% else %}{% url 'clinic:doctor_list' %}{% endif %}" 
+                               class="btn btn-outline-secondary btn-lg px-5 cancel-btn">
+                                <i class="fas fa-times me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Основные стили */
+.doctor-form-card {
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.doctor-form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+/* Стили для полей ввода */
+.form-control, .form-select {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    padding: 14px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    width: 100%;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--pastel-primary);
+    box-shadow: 0 0 0 0.3rem rgba(162, 210, 255, 0.25);
+    background: white;
+    transform: translateY(-2px);
+}
+
+/* Контейнер для описания */
+.description-container textarea {
+    min-height: 120px;
+    resize: vertical;
+    width: 100%;
+}
+
+.form-label {
+    color: var(--pastel-text);
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.05rem;
+}
+
+/* Кастомная загрузка файлов */
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-upload-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--pastel-primary) 0%, var(--pastel-secondary) 100%);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.file-upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(162, 210, 255, 0.3);
+}
+
+.file-upload-btn input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Группы полей */
+.form-group {
+    position: relative;
+    padding: 15px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(162, 210, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.form-group:hover {
+    border-color: var(--pastel-primary);
+    box-shadow: 0 5px 15px rgba(162, 210, 255, 0.1);
+}
+
+/* Специализации */
+.specializations-container {
+    background: rgba(162, 210, 255, 0.05);
+    border: 2px dashed #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.specializations-container .form-check {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.specializations-container .form-check:hover {
+    border-color: var(--pastel-primary);
+    background: rgba(162, 210, 255, 0.1);
+}
+
+.specializations-container .form-check-input {
+    width: 1.3em;
+    height: 1.3em;
+    margin-right: 10px;
+}
+
+.specializations-container .form-check-input:checked {
+    background-color: var(--pastel-primary);
+    border-color: var(--pastel-primary);
+}
+
+/* Текущее фото */
+.current-photo {
+    border-radius: 12px;
+    border: 3px solid var(--pastel-primary);
+    padding: 5px;
+    background: white;
+}
+
+/* Переключатель */
+.featured-switch {
+    padding: 15px;
+    background: linear-gradient(135deg, #ffffff 0%, #fff9ed 100%);
+    border-radius: 12px;
+    border: 2px solid #ffd166;
+}
+
+.featured-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+}
+
+.featured-switch .form-check-input:checked {
+    background-color: #ffd166;
+    border-color: #ffd166;
+}
+
+/* Кнопки */
+.save-btn {
+    background: linear-gradient(135deg, var(--pastel-secondary) 0%, var(--pastel-primary) 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 35px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(162, 210, 255, 0.3);
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(162, 210, 255, 0.4);
+}
+
+.cancel-btn {
+    border-radius: 15px;
+    padding: 15px 35px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid #6c757d;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+.form-group:nth-child(5) { animation-delay: 0.5s; }
+.form-group:nth-child(6) { animation-delay: 0.6s; }
+.form-group:nth-child(7) { animation-delay: 0.7s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem !important;
+    }
+    
+    .btn-lg {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+    
+    .specializations-container {
+        max-height: 200px;
+    }
+    
+    .file-upload-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+// Скрипт для отображения имени выбранного файла
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileName = document.getElementById('fileName');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'Файл не выбран';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

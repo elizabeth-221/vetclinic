@@ -1,0 +1,138 @@
+{% extends 'clinic/base.html' %}
+{% load static %}
+
+{% block title %}Наши врачи | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Заголовок и кнопка -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 mb-3">Наши врачи</h1>
+        <p class="lead text-muted">Профессиональная команда специалистов, готовых помочь вашему питомцу</p>
+        <a href="{% url 'clinic:doctor_create' %}" class="btn btn-success btn-lg mt-3">
+            <i class="fas fa-plus-circle me-2"></i>Добавить врача
+        </a>
+    </div>
+
+    <!-- Сообщения -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Сетка врачей -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for doctor in doctors %}
+        <div class="col">
+            <div class="card doctor-card h-100 shadow-sm border-0">
+                <div class="card-img-container position-relative">
+                    <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}{% static 'clinic/images/doctor_placeholder.jpg' %}{% endif %}"
+                         class="card-img-top"
+                         alt="{{ doctor.first_name }} {{ doctor.last_name }}"
+                         style="height: 280px; object-fit: cover;">
+                    {% if doctor.is_featured %}
+                    <span class="position-absolute top-0 end-0 m-2 badge bg-success">
+                        <i class="fas fa-star me-1"></i>На главной
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Др. {{ doctor.first_name }} {{ doctor.last_name }}</h5>
+                    
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary me-2">
+                            <i class="fas fa-briefcase me-1"></i>{{ doctor.experience }} лет
+                        </span>
+                    </div>
+
+                    <div class="specializations mb-3">
+                        {% for spec in doctor.specializations.all %}
+                        <span class="badge bg-light text-dark me-1 mb-1">{{ spec.name }}</span>
+                        {% empty %}
+                        <span class="text-muted small">Специализации не указаны</span>
+                        {% endfor %}
+                    </div>
+
+                    <p class="card-text text-muted">{{ doctor.description|truncatewords:25|default:"Описание отсутствует" }}</p>
+                </div>
+
+                <div class="card-footer bg-white border-0 pt-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'clinic:doctor_detail' doctor.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>Подробнее
+                        </a>
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'clinic:doctor_update' doctor.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{% url 'clinic:doctor_delete' doctor.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger"
+                                        onclick="return confirm('Удалить врача {{ doctor.first_name }} {{ doctor.last_name }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Врачи не найдены</h4>
+                <p class="text-muted">Добавьте первого врача в систему</p>
+                <a href="{% url 'clinic:doctor_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Добавить врача
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.doctor-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
+}
+.card-img-container {
+    overflow: hidden;
+}
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+.doctor-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Увеличиваем расстояние между кнопками в группе */
+.btn-group {
+    gap: 8px !important; /* Добавляем расстояние между кнопками */
+}
+
+.btn-group .btn {
+    border-radius: 8px !important; /* Скругляем углы */
+    padding: 8px 12px; /* Увеличиваем padding */
+    flex: 1; /* Равная ширина */
+    min-width: auto; /* Убираем минимальную ширину */
+}
+
+/* Увеличиваем расстояние между основной кнопкой и группой */
+.d-grid.gap-2 {
+    gap: 12px !important; /* Увеличиваем расстояние между кнопками */
+}
+</style>
+{% endblock %}

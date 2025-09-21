@@ -1,8 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Count, Avg  # Импорт для сложных запросов и агрегации
 from django.utils import timezone  # Для работы с датами
 from .models import Service, Doctor, Promotion, Review
+from django.contrib import messages  # Для всплывающих сообщений
+from django.views.decorators.http import require_POST  # Для ограничения метода запроса
 from .forms import DoctorForm
+
 
 def index(request):
     # 1. Получаем активные акции (сейчас и позже начала, и раньше окончания)
@@ -63,4 +66,55 @@ def search_services(request):
         'results_count': services.count()
     }
     return render(request, 'clinic/search_results.html', context)
+
+# CRUD для Doctor
+def doctor_list(request):
+    """Страница со списком всех врачей для демонстрации CRUD"""
+    doctors = Doctor.objects.all().order_by('last_name', 'first_name')
+    return render(request, 'clinic/doctor_list.html', {'doctors': doctors})
+
+def doctor_detail(request, pk):
+    """Детальная страница врача (Read)"""
+    doctor = get_object_or_404(Doctor, pk=pk)
+    # Получаем только одобренные отзывы для этого врача
+    reviews = doctor.reviews.filter(is_approved=True)
+    return render(request, 'clinic/doctor_detail.html', {'doctor': doctor, 'reviews': reviews})
+
+def doctor_create(request):
+    """Создание нового врача (Create)"""
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, request.FILES)  # request.FILES для загрузки фото
+        if form.is_valid():
+            new_doctor = form.save()
+            messages.success(request, f'Врач {new_doctor.first_name} {new_doctor.last_name} успешно добавлен!')
+            return redirect('clinic:doctor_detail', pk=new_doctor.pk)  # ← Здесь используется redirect
+    else:
+        form = DoctorForm()
+
+    return render(request, 'clinic/doctor_form.html', {'form': form, 'title': 'Добавить нового врача'})
+
+def doctor_update(request, pk):
+    """Редактирование врача (Update)"""
+    doctor = get_object_or_404(Doctor, pk=pk)
+    if request.method == 'POST':
+        # instance=doctor указывает, что мы редактируем существующий объект
+        form = DoctorForm(request.POST, request.FILES, instance=doctor)
+        if form.is_valid():
+            updated_doctor = form.save()
+            messages.success(request, f'Данные врача {updated_doctor.first_name} {updated_doctor.last_name} обновлены!')
+            return redirect('clinic:doctor_detail', pk=doctor.pk)
+    else:
+        # Если запрос GET, заполняем форму данными врача
+        form = DoctorForm(instance=doctor)
+
+    return render(request, 'clinic/doctor_form.html', {'form': form, 'title': 'Редактировать врача', 'doctor': doctor})
+
+@require_POST  # Разрешаем только POST-запросы для безопасности
+def doctor_delete(request, pk):
+    """Удаление врача (Delete)"""
+    doctor = get_object_or_404(Doctor, pk=pk)
+    full_name = f"{doctor.first_name} {doctor.last_name}"
+    doctor.delete()
+    messages.success(request, f'Врач {full_name} был удален.')
+    return redirect('clinic:doctor_list')  # Перенаправляем обратно к списку
 

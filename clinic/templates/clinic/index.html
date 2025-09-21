@@ -21,11 +21,14 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a class="nav-link active" href="#hero">Главная</a>
-                    <a class="nav-link" href="#promotions">Акции</a>
-                    <a class="nav-link" href="#doctors">Врачи</a>
-                    <a class="nav-link" href="#reviews">Отзывы</a>
-                    <a class="nav-link" href="#contacts">Контакты</a>
+                    <a class="nav-link" href="{% url 'clinic:index' %}#hero">Главная</a>
+                    <a class="nav-link" href="{% url 'clinic:index' %}#promotions">Акции</a>
+                    <!-- Пункт для прокрутки к виджету врачей на главной -->
+                    <a class="nav-link" href="{% url 'clinic:index' %}#doctors">Врачи</a>
+                    <!-- Пункт для перехода на отдельную страницу со всеми врачами -->
+                    <a class="nav-link" href="{% url 'clinic:doctor_list' %}">Все врачи</a>
+                    <a class="nav-link" href="{% url 'clinic:index' %}#reviews">Отзывы</a>
+                    <a class="nav-link" href="{% url 'clinic:index' %}#contacts">Контакты</a>
                 </div>
             </div>
         </div>
@@ -156,33 +159,45 @@
                 <p class="text-muted">Мы всегда рады помочь вам и вашим питомцам</p>
             </div>
             <div class="row">
+                <!-- Левая колонка с картой -->
                 <div class="col-lg-6 mb-4">
                     <div class="map-container">
-                        <p class="text-muted m-0">Здесь будет карта</p>
+                        <!-- Google Карта -->
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2245.3727899243865!2d37.61729931582906!3d55.755826680553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b54a5b2a56538d%3A0x6e7ab6b3b4d0d0b!2z0JzQvtGB0LrQvtCy0YHQutC40Lkg0YLRgNC40LvRjNC90LDRjyDQv9C-0LvRjNC30LXQvdC40Y8!5e0!3m2!1sru!2sru!4v1695300000000!5m2!1sru!2sru" 
+                            width="100%" 
+                            height="400" 
+                            style="border-radius: 15px; border: none;" 
+                            allowfullscreen="" 
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
                     </div>
                 </div>
+                
+                <!-- Правая колонка с контактами -->
                 <div class="col-lg-6">
                     <div class="contact-info-card">
                         <h4 class="fw-bold mb-4">Контактная информация</h4>
-                        <p class="d-flex align-items-center">
+                        <p class="d-flex align-items-center mb-3">
                             <i class="fas fa-phone contact-icon"></i>
                             <span>+7 (495) 123-45-67</span>
                         </p>
-                        <p class="d-flex align-items-center">
+                        <p class="d-flex align-items-center mb-3">
                             <i class="fas fa-envelope contact-icon"></i>
                             <span>info@pitomec.ru</span>
                         </p>
-                        <p class="d-flex align-items-center">
+                        <p class="d-flex align-items-center mb-3">
                             <i class="fas fa-map-marker-alt contact-icon"></i>
                             <span>г. Москва, ул. Пушкина, д. 1</span>
                         </p>
-                        <p class="d-flex align-items-center">
+                        <p class="d-flex align-items-center mb-4">
                             <i class="fas fa-clock contact-icon"></i>
                             <span>Ежедневно: 9:00 - 21:00</span>
                         </p>
-                        <div class="mt-4">
+                        <div>
                             <h5 class="fw-bold">Как добраться</h5>
-                            <p class="text-muted">Мы находимся в центре города, рядом с станцией метро "Центральная".</p>
+                            <p class="text-muted mb-0">Мы находимся в центре города, рядом с станцией метро "Тверская".</p>
                         </div>
                     </div>
                 </div>

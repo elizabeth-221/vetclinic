@@ -51,33 +51,46 @@
                 {% if services %}
                     <div class="services-grid">
                         {% for service in services %}
-                        <div class="service-item">
-                            <div class="service-icon">
-                                <i class="fas fa-stethoscope"></i>
-                            </div>
-                            <div class="service-content">
-                                <div class="service-header">
-                                    <h3>{{ service.name }}</h3>
+                        <div class="service-card">
+                            <div class="service-card-header">
+                                <div class="service-icon">
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                                <div class="service-title-container">
+                                    <h3 class="service-title">{{ service.name }}</h3>
                                     <span class="service-price">{{ service.price }} ₽</span>
                                 </div>
+                            </div>
+                            
+                            <div class="service-card-body">
                                 <p class="service-description">{{ service.description }}</p>
                                 
                                 {% if service.doctors.all %}
                                 <div class="service-doctors">
-                                    <h4><i class="fas fa-user-md me-2"></i>Специалисты</h4>
+                                    <h4 class="doctors-title">
+                                        <i class="fas fa-user-md me-2"></i>Специалисты
+                                    </h4>
                                     <div class="doctors-list">
                                         {% for doctor in service.doctors.all %}
-                                        <span class="doctor-item">
-                                            <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}https://placehold.co/35x35/cdb4db/ffffff?text=DR{% endif %}" 
+                                        <div class="doctor-item">
+                                            <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}https://placehold.co/40x40/cdb4db/ffffff?text=DR{% endif %}" 
                                                  alt="{{ doctor.first_name }}" class="doctor-avatar">
-                                            <span>{{ doctor.first_name }} {{ doctor.last_name }}</span>
-                                        </span>
+                                            <div class="doctor-info">
+                                                <span class="doctor-name">{{ doctor.first_name }} {{ doctor.last_name }}</span>
+                                                <span class="doctor-spec">
+                                                    {% for spec in doctor.specializations.all %}
+                                                    {{ spec.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div>
                                         {% endfor %}
                                     </div>
                                 </div>
                                 {% endif %}
                             </div>
-                            <div class="service-actions">
+                            
+                            <div class="service-card-footer">
                                 <span class="service-status {% if service.is_active %}status-active{% else %}status-inactive{% endif %}">
                                     <i class="fas fa-circle"></i>
                                     {% if service.is_active %}Доступно{% else %}Недоступно{% endif %}

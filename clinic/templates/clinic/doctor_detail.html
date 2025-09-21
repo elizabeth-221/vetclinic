@@ -1,0 +1,114 @@
+{% extends 'clinic/base.html' %}
+{% load static %}
+
+{% block title %}Др. {{ doctor.first_name }} {{ doctor.last_name }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'clinic:index' %}" class="text-decoration-none">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'clinic:doctor_list' %}" class="text-decoration-none">Врачи</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ doctor.first_name }} {{ doctor.last_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Фото и основная информация -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}{% static 'clinic/images/doctor_placeholder.jpg' %}{% endif %}"
+                     class="card-img-top"
+                     alt="{{ doctor.first_name }} {{ doctor.last_name }}"
+                     style="height: 350px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h2 class="h4 fw-bold mb-1">Др. {{ doctor.first_name }} {{ doctor.last_name }}</h2>
+                    
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <span class="badge bg-primary me-2">
+                            <i class="fas fa-briefcase me-1"></i>{{ doctor.experience }} лет опыта
+                        </span>
+                        {% if doctor.is_featured %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-star me-1"></i>На главной
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'clinic:doctor_update' doctor.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Редактировать
+                        </a>
+                        <a href="{% url 'clinic:doctor_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Все врачи
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Подробная информация -->
+        <div class="col-lg-8">
+            <!-- Специализации -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-graduation-cap me-2 text-primary"></i>Специализации</h4>
+                </div>
+                <div class="card-body">
+                    {% if doctor.specializations.all %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for spec in doctor.specializations.all %}
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                            {{ spec.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Специализации не указаны</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- О враче -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-user-md me-2 text-primary"></i>О враче</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-0">{{ doctor.description|linebreaksbr|default:"Описание отсутствует" }}</p>
+                </div>
+            </div>
+
+            <!-- Отзывы -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-comments me-2 text-primary"></i>Отзывы пациентов</h4>
+                </div>
+                <div class="card-body">
+                    {% for review in reviews %}
+                    <div class="border-start border-3 border-primary ps-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0">{{ review.author_name }}</h6>
+                            <div class="star-rating text-warning">
+                                {% for i in "12345" %}
+                                <i class="fas fa-star{% if forloop.counter > review.rating %}-o opacity-25{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="mb-2">{{ review.text }}</p>
+                        <small class="text-muted">{{ review.created_at|date:"d E Y, H:i" }}</small>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Отзывов пока нет</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
