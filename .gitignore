@@ -1,0 +1,42 @@
+# Базы данных
+*.sqlite3
+*.db
+db.sqlite3
+
+# Питон
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Виртуальные окружения
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+media/
+staticfiles/
+
+# Резервные копии
+backup.json
+*.backup
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Миграции (осторожно - только если уверены)
+# migrations/
+# !migrations/__init__.py
