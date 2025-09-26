@@ -4,6 +4,7 @@ from . import views
 app_name = 'clinic'
 
 urlpatterns = [
+    path('reexam/', views.reexam_page, name='reexam_page'),
     path('', views.index, name='index'),
     path('search/', views.search_services, name='search_services'),
     # Новые маршруты для CRUD врачей:

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
-from .models import Service, Doctor, Promotion, Review
+from .models import Service, Doctor, Promotion, Review, Tour
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from .forms import DoctorForm
@@ -105,3 +105,15 @@ def doctor_delete(request, pk):
     doctor.delete()
     messages.success(request, f'Врач {full_name} был удален.')
     return redirect('clinic:doctor_list')
+
+
+def reexam_page(request):
+    # Получаем все опубликованные экскурсии
+    published_tours = Tour.objects.filter(is_public=True)
+    
+    context = {
+        'tours': published_tours,
+        'fio': 'Романова Е.П.',
+        'group': '241-671'
+    }
+    return render(request, 'clinic/reexam.html', context)

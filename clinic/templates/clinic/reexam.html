@@ -1,0 +1,59 @@
+{% extends 'clinic/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Страница музея/выставки</h1>
+    
+    <!-- Заголовок с ФИО и группой -->
+    <div class="alert alert-info">
+        <h2>Студент: {{ fio }}</h2>
+        <h3>Группа: {{ group }}</h3>
+    </div>
+
+    <!-- Список опубликованных экскурсий -->
+    <h2>Опубликованные экскурсии</h2>
+    
+    {% if tours %}
+        <div class="row">
+            {% for tour in tours %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ tour.theme }}</h5>
+                        
+                        <!-- Все 5 полей экскурсии -->
+                        <div class="mb-2">
+                            <strong>Дата и время:</strong> {{ tour.datetime|date:"d.m.Y H:i" }}
+                        </div>
+                        <div class="mb-2">
+                            <strong>Максимум посетителей:</strong> {{ tour.max_visitors }} человек
+                        </div>
+                        <div class="mb-2">
+                            <strong>Экскурсовод:</strong> {{ tour.guide.full_name }}
+                        </div>
+                        <div class="mb-2">
+                            <strong>Специализация экскурсовода:</strong> {{ tour.guide.specialization }}
+                        </div>
+                        <div class="mb-2">
+                            <strong>Стаж экскурсовода:</strong> {{ tour.guide.experience }} лет
+                        </div>
+                        
+                        <!-- Тематические экспонаты -->
+                        <div class="mb-2">
+                            <strong>Тематические экспонаты:</strong>
+                            <ul>
+                                {% for exhibit in tour.thematic_exhibits.all %}
+                                <li>{{ exhibit.name }} ({{ exhibit.era }}, {{ exhibit.country }})</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нет опубликованных экскурсий.</p>
+    {% endif %}
+</div>
+{% endblock %}
