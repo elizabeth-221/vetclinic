@@ -149,3 +149,51 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Отзыв от {self.author_name} ({self.rating}/5)"
+    
+
+
+
+
+class Exhibit(models.Model):  # Экспонат
+    name = models.CharField(max_length=200, verbose_name="Название")
+    era = models.CharField(max_length=100, verbose_name="Эпоха")
+    description = models.TextField(verbose_name="Описание")
+    country = models.CharField(max_length=100, verbose_name="Страна происхождения")
+    
+    def __str__(self):
+        return self.name
+
+class Hall(models.Model):  # Зал
+    name = models.CharField(max_length=100, verbose_name="Название")
+    theme = models.CharField(max_length=100, verbose_name="Тематика")
+    floor = models.IntegerField(verbose_name="Этаж")
+    
+    def __str__(self):
+        return self.name
+
+class Guide(models.Model):  # Экскурсовод
+    full_name = models.CharField(max_length=200, verbose_name="ФИО")
+    specialization = models.CharField(max_length=100, verbose_name="Специализация")
+    experience = models.IntegerField(verbose_name="Стаж работы (лет)")
+    
+    def __str__(self):
+        return self.full_name
+
+class Tour(models.Model):  # Экскурсия
+    theme = models.CharField(max_length=200, verbose_name="Тема")
+    datetime = models.DateTimeField(verbose_name="Дата и время проведения")
+    max_visitors = models.IntegerField(verbose_name="Максимальное количество человек")
+    is_public = models.BooleanField(default=True, verbose_name="Опубликовано")
+    
+    # Связи
+    guide = models.ForeignKey(Guide, on_delete=models.CASCADE, verbose_name="Экскурсовод")
+    thematic_exhibits = models.ManyToManyField(Exhibit, verbose_name="Тематические экспонаты")
+    
+    def __str__(self):
+        return self.theme
+
+# Экспонат - Текущий зал 
+Exhibit.add_to_class('current_hall', models.ForeignKey(Hall, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Текущий зал"))
+
+# Экскурсовод - Ведомые залы
+Guide.add_to_class('guided_halls', models.ManyToManyField(Hall, verbose_name="Ведомые залы"))
