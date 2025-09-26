@@ -154,20 +154,7 @@ class Review(models.Model):
 
 
 
-class Exhibit(models.Model):  # Таблица Экспонат
-    name = models.CharField(max_length=200, verbose_name="Название")
-    era = models.CharField(max_length=100, verbose_name="Эпоха")
-    description = models.TextField(verbose_name="Описание")
-    country = models.CharField(max_length=100, verbose_name="Страна происхождения")
-    
-    class Meta:
-        verbose_name = "Экспонат"
-        verbose_name_plural = "Экспонаты"
-    
-    def __str__(self):
-        return self.name
-
-class Hall(models.Model):  # Таблица Зал
+class Hall(models.Model): # Зал
     name = models.CharField(max_length=100, verbose_name="Название")
     theme = models.CharField(max_length=100, verbose_name="Тематика")
     floor = models.IntegerField(verbose_name="Этаж")
@@ -179,10 +166,34 @@ class Hall(models.Model):  # Таблица Зал
     def __str__(self):
         return self.name
 
-class Guide(models.Model):  # Таблица Экскурсовод
+class Exhibit(models.Model):  # Экспонат
+    name = models.CharField(max_length=200, verbose_name="Название")
+    era = models.CharField(max_length=100, verbose_name="Эпоха")
+    description = models.TextField(verbose_name="Описание")
+    country = models.CharField(max_length=100, verbose_name="Страна происхождения")
+    current_hall = models.ForeignKey(
+        Hall,
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        verbose_name="Текущий зал"
+    )
+    
+    class Meta:
+        verbose_name = "Экспонат"
+        verbose_name_plural = "Экспонаты"
+    
+    def __str__(self):
+        return self.name
+
+class Guide(models.Model):  # Экскурсовод
     full_name = models.CharField(max_length=200, verbose_name="ФИО")
     specialization = models.CharField(max_length=100, verbose_name="Специализация")
     experience = models.IntegerField(verbose_name="Стаж работы (лет)")
+    guided_halls = models.ManyToManyField(
+        Hall, 
+        verbose_name="Ведомые залы"
+    )
     
     class Meta:
         verbose_name = "Экскурсовод"
@@ -191,15 +202,21 @@ class Guide(models.Model):  # Таблица Экскурсовод
     def __str__(self):
         return self.full_name
 
-class Tour(models.Model):  # Таблица Экскурсия
+class Tour(models.Model):  # Экскурсия
     theme = models.CharField(max_length=200, verbose_name="Тема")
     datetime = models.DateTimeField(verbose_name="Дата и время проведения")
     max_visitors = models.IntegerField(verbose_name="Максимальное количество человек")
     is_public = models.BooleanField(default=True, verbose_name="Опубликовано")
     
-    # Связи
-    guide = models.ForeignKey(Guide, on_delete=models.CASCADE, verbose_name="Экскурсовод")
-    thematic_exhibits = models.ManyToManyField(Exhibit, verbose_name="Тематические экспонаты")
+    guide = models.ForeignKey(
+        Guide, 
+        on_delete=models.CASCADE, 
+        verbose_name="Экскурсовод"
+    )
+    thematic_exhibits = models.ManyToManyField(
+        Exhibit, 
+        verbose_name="Тематические экспонаты"
+    )
     
     class Meta:
         verbose_name = "Экскурсия"
@@ -207,9 +224,3 @@ class Tour(models.Model):  # Таблица Экскурсия
     
     def __str__(self):
         return self.theme
-
-# Добавляем связь Экспонат - Текущий зал (после создания Hall)
-Exhibit.add_to_class('current_hall', models.ForeignKey(Hall, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Текущий зал"))
-
-# Добавляем связь Экскурсовод - Ведомые залы (после создания Hall)
-Guide.add_to_class('guided_halls', models.ManyToManyField(Hall, verbose_name="Ведомые залы"))

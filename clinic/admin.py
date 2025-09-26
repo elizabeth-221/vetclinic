@@ -208,12 +208,12 @@ class GuideAdmin(admin.ModelAdmin):
     list_display = ['full_name', 'specialization', 'experience']
     list_filter = ['specialization']
     search_fields = ['full_name', 'specialization']
-    filter_horizontal = ['guided_halls']  # Пункт 3 - удобное M2M
+    filter_horizontal = ['guided_halls']  
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
     list_display = ['theme', 'datetime', 'max_visitors', 'guide', 'is_public']
-    list_filter = ['is_public', 'datetime']  # Пункт 4 и 5 - фильтры
-    search_fields = ['theme', 'guide__full_name']  # Пункт 1 - поиск
-    date_hierarchy = 'datetime'  # Пункт 2 - поиск по дате
-    filter_horizontal = ['thematic_exhibits']  # Пункт 3 - удобное M2M
+    list_filter = ['is_public', 'datetime']  
+    search_fields = ['theme', 'guide__full_name']  
+    date_hierarchy = 'datetime' 
+    filter_horizontal = ['thematic_exhibits'] 
