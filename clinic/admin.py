@@ -52,7 +52,6 @@ class DoctorAdmin(admin.ModelAdmin):
     list_filter = ('is_featured', 'specializations')
     list_editable = ('is_featured',)
     search_fields = ('first_name', 'last_name')
-    exclude = ('specializations',)
     inlines = (DoctorSpecializationInline, DoctorServiceInline)  # СИММЕТРИЧНАЯ СВЯЗЬ
     
     fieldsets = (

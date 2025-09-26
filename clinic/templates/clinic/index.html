@@ -65,7 +65,7 @@
             <div class="col-md-4 col-lg-4 mb-4">
                 <div class="card custom-card doctor-card h-100">
                     <div class="card-body text-center">
-                        <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}https://placehold.co/150x150/cdb4db/ffffff?text=DR{% endif %}" 
+                        <img src="{% if doctor.photo %}{{ doctor.photo.url }}{% else %}{% static 'clinic/images/doctor_placeholder.jpg' %}{% endif %}" 
                              alt="{{ doctor.first_name }} {{ doctor.last_name }}" 
                              class="doctor-image mb-3 rounded-circle" 
                              style="width: 150px; height: 150px; object-fit: cover;">
