@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Specialization, Doctor, Service, Promotion, Appointment, Review, DoctorSpecialization, ServiceDoctor
+from .models import Exhibit, Hall, Guide, Tour
 
 # Inline для врача (специализации)
 class DoctorSpecializationInline(admin.TabularInline):
@@ -188,4 +189,31 @@ class ReviewAdmin(admin.ModelAdmin):
         updated_count = queryset.update(is_approved=True)
         self.message_user(request, f"{updated_count} отзыв(ов) было одобрено.")
 
-# Промежуточные модели НЕ регистрируем отдельно - управление только через inlines
+
+
+@admin.register(Exhibit)
+class ExhibitAdmin(admin.ModelAdmin):
+    list_display = ['name', 'era', 'country', 'current_hall']
+    list_filter = ['era', 'country']
+    search_fields = ['name', 'description']
+
+@admin.register(Hall)
+class HallAdmin(admin.ModelAdmin):
+    list_display = ['name', 'theme', 'floor']
+    list_filter = ['theme', 'floor']
+    search_fields = ['name', 'theme']
+
+@admin.register(Guide)
+class GuideAdmin(admin.ModelAdmin):
+    list_display = ['full_name', 'specialization', 'experience']
+    list_filter = ['specialization']
+    search_fields = ['full_name', 'specialization']
+    filter_horizontal = ['guided_halls']  # Пункт 3 - удобное M2M
+
+@admin.register(Tour)
+class TourAdmin(admin.ModelAdmin):
+    list_display = ['theme', 'datetime', 'max_visitors', 'guide', 'is_public']
+    list_filter = ['is_public', 'datetime']  # Пункт 4 и 5 - фильтры
+    search_fields = ['theme', 'guide__full_name']  # Пункт 1 - поиск
+    date_hierarchy = 'datetime'  # Пункт 2 - поиск по дате
+    filter_horizontal = ['thematic_exhibits']  # Пункт 3 - удобное M2M
